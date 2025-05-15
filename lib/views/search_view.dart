@@ -1,14 +1,53 @@
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
+import '../models/model.dart';
+import '../views/news_view.dart';
 
-class SearchView extends StatelessWidget {
-  List<String> news = [
-    "Insurtech startup PasarPolis gets \$54 million — Series B",
-    "Hypatos gets \$11.8M for a deep learning approach",
-    "The IPO parade continues as Wish files, Bumble targets continues as parade",
-    "Insurtech startup PasarPolis gets \$54 million — Series B",
-    "Hypatos gets \$11.8M for a deep learning approach",
-    "The IPO parade continues as Wish files, Bumble targets continues as parade",
-  ];
+class SearchView extends StatefulWidget {
+  const SearchView({Key? key}) : super(key: key);
+
+  @override
+  State<SearchView> createState() => _SearchViewState();
+}
+
+class _SearchViewState extends State<SearchView> {
+  final TextEditingController _searchController = TextEditingController();
+  List<Articles> filteredArticles = [];
+  bool isLoading = false;
+
+  void searchNews(String query) async {
+    if (query.trim().isEmpty) return;
+
+    setState(() {
+      isLoading = true;
+    });
+
+    final dio = Dio();
+    const apiKey = '29177e105e9d44a19a588ed801905b46';
+    const url = 'https://newsapi.org/v2/top-headlines?country=us&apiKey=$apiKey';
+
+    try {
+      final response = await dio.get(url);
+      final ModelNews news = ModelNews.fromJson(response.data);
+      final allArticles = news.articles ?? [];
+
+      final results = allArticles.where((article) {
+        final title = article.title?.toLowerCase() ?? '';
+        final content = article.content?.toLowerCase() ?? '';
+        return title.contains(query.toLowerCase()) || content.contains(query.toLowerCase());
+      }).toList();
+
+      setState(() {
+        filteredArticles = results;
+        isLoading = false;
+      });
+    } catch (e) {
+      print("Search Error: $e");
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,28 +61,36 @@ class SearchView extends StatelessWidget {
               height: 70,
               width: double.infinity,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(40)),
-
-                color: Color(0xff141E28).withValues(alpha: .8),
+                borderRadius: BorderRadius.circular(40),
+                color: Color(0xff141E28).withOpacity(.8),
               ),
               child: Padding(
-                padding: const EdgeInsets.all(18.0),
+                padding: const EdgeInsets.symmetric(horizontal: 18),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      "Virtual Reality",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    Container(
-                      height: 40,
-                      width: 40,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(40),
+                    Expanded(
+                      child: TextField(
+                        controller: _searchController,
+                        onSubmitted: searchNews,
+                        style: TextStyle(color: Colors.white),
+                        decoration: InputDecoration(
+                          hintText: "Search by title or content",
+                          hintStyle: TextStyle(color: Colors.white54),
+                          border: InputBorder.none,
+                        ),
                       ),
-
-                      child: Icon(Icons.search),
+                    ),
+                    GestureDetector(
+                      onTap: () => searchNews(_searchController.text),
+                      child: Container(
+                        height: 40,
+                        width: 40,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(40),
+                        ),
+                        child: Icon(Icons.search),
+                      ),
                     ),
                   ],
                 ),
@@ -53,74 +100,85 @@ class SearchView extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("13 Videos", style: TextStyle(fontSize: 24)),
+                Text("Results", style: TextStyle(fontSize: 24)),
                 Icon(Icons.arrow_circle_right_outlined),
               ],
             ),
-
-            SizedBox(
-              height: 160,
-              child: ListView.builder(
-                itemCount: 14,
-                scrollDirection: Axis.horizontal,
+            SizedBox(height: 20),
+            isLoading
+                ? CircularProgressIndicator()
+                : Expanded(
+              child: filteredArticles.isEmpty
+                  ? Center(child: Text("No results found"))
+                  : ListView.builder(
+                itemCount: filteredArticles.length,
                 itemBuilder: (context, index) {
-                  return ListVideo();
+                  final article = filteredArticles[index];
+                  return InkWell(
+                    onTap: () {
+                      if (article.url != null) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => NewsView(article: article),
+                          ),
+                        );
+                      }
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Container(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.network(
+                                article.urlToImage ?? "https://www.souqfriday.com/src/images/no-image.png",
+                                width: 90,
+                                height: 90,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    article.source?.name ?? "Unknown",
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    article.title ?? "No Title",
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black,
+                                      height: 1.3,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
                 },
               ),
             ),
-            SizedBox(height: 20),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("78 News", style: TextStyle(fontSize: 24)),
-                Icon(Icons.arrow_circle_right_outlined),
-              ],
-            ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: news.length,
-
-                itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.all(14.0),
-                  child: Text(news[index] ,style: TextStyle(fontSize: 16),),
-                );
-              },),
-            )
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class ListVideo extends StatelessWidget {
-  const ListVideo({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-        height: 140,
-        width: 224,
-        decoration: BoxDecoration(
-          image: DecorationImage(image: AssetImage("assets/images/test.png")),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(Icons.play_circle_outline, color: Colors.white),
-              SizedBox(height: 40),
-              Text(
-                "The IPO parade\n continues as Wish files",
-                style: TextStyle(color: Colors.white),
-              ),
-            ],
-          ),
         ),
       ),
     );

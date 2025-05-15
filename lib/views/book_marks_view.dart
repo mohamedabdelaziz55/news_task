@@ -1,20 +1,26 @@
 import 'package:flutter/material.dart';
+import '../constent.dart';
+import '../widgets/category_card.dart';
 import '../widgets/icons_appbar.dart';
 import '../widgets/news_card.dart';
 
-class BookMarksView extends StatelessWidget {
+class BookMarksView extends StatefulWidget {
+  const BookMarksView({super.key});
   static String id = 'BookMarks';
 
   @override
+  State<BookMarksView> createState() => _BookMarksViewState();
+}
+
+class _BookMarksViewState extends State<BookMarksView> {
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // extendBody: ,
-      appBar:AppBar(
+      appBar: AppBar(
         backgroundColor: Colors.transparent,
         centerTitle: true,
-        leading: MenuIcon(),
-
-        actions: [IconsSearch(icon: Icons.search)],
+        leading: const MenuIcon(),
+        actions: const [IconsSearch(icon: Icons.search)],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -23,21 +29,28 @@ class BookMarksView extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                "Collections",
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                "Categories",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
               SizedBox(
-                height: 120,
-                child: ListView(
+                height: 250,
+                child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  children: const [
-                    CategoryCard(title: 'SPORTS', image: 'https://picsum.photos/200/300?1'),
-                    CategoryCard(title: 'TECH', image: 'https://picsum.photos/200/300?2'),
-                    CategoryCard(title: 'SPORTS', image: 'https://picsum.photos/200/300?1'),
-                    CategoryCard(title: 'TECH', image: 'https://picsum.photos/200/300?2'),
-
-                  ],
+                  itemCount: bookmarkedCategories.length,
+                  itemBuilder: (context, index) {
+                    final cat = bookmarkedCategories[index];
+                    return CategoryCard(
+                      category: cat['category']!,
+                      imagePath: cat['imagePath']!,
+                      title: cat['title']!,
+                      onRemove: () {
+                        setState(() {
+                          bookmarkedCategories.removeAt(index);
+                        });
+                      },
+                    );
+                  },
                 ),
               ),
               const SizedBox(height: 24),
@@ -46,51 +59,24 @@ class BookMarksView extends StatelessWidget {
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
-              ...List.generate(
-                10,
-                    (index) => Padding(
-                  padding: const EdgeInsets.only(bottom: 12.0),
-                  child: NewsCard(onDelete: () {  },),
+              if (bookmarkedArticles.isEmpty)
+                const Center(child: Text("No bookmarks yet.😕"))
+              else
+                ...bookmarkedArticles.map(
+                      (article) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12.0),
+                    child: NewsCard(
+                      article: article,
+                      onDelete: () {
+                        setState(() {
+                          bookmarkedArticles.remove(article);
+                        });
+                      },
+                    ),
+                  ),
                 ),
-              ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class CategoryCard extends StatelessWidget {
-  final String title;
-  final String image;
-
-  const CategoryCard({required this.title, required this.image});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            Image.network(image, width: 120, height: 120, fit: BoxFit.cover),
-            Container(
-              width: 120,
-              height: 120,
-              color: Colors.black.withOpacity(0.3),
-              alignment: Alignment.center,
-              child: Text(
-                title,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            )
-          ],
         ),
       ),
     );

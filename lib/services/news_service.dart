@@ -32,4 +32,5 @@ class NewsService {
       return [];
     }
   }
+
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:news_app_task/views/search_view.dart';
-
 import 'book_marks_view.dart';
 import 'home_view.dart';
 
@@ -21,7 +20,7 @@ class _DashboardState extends State<Dashboard> {
     HomeView(),
     BookMarksView(),
     SearchView(),
-    NotificationsPage(),
+    // NotificationsPage(),
     SearchView(),
   ];
 
