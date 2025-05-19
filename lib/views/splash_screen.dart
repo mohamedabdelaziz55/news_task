@@ -11,7 +11,7 @@ class MyCustomSplashScreen extends StatefulWidget {
 
 class _MyCustomSplashScreenState extends State<MyCustomSplashScreen>
     with TickerProviderStateMixin {
-  double _fontSize = 2;
+  double _fontSize = 2.5;
   double _containerSize = 1.5;
   double _textOpacity = 0.0;
   double _containerOpacity = 0.0;
@@ -41,23 +41,21 @@ class _MyCustomSplashScreenState extends State<MyCustomSplashScreen>
 
     _controller.forward();
 
-    Timer(Duration(seconds: 2), () {
+    Timer(Duration(seconds: 1), () {
       setState(() {
-        _fontSize = 1.06;
+        _fontSize = 1.2;
       });
     });
 
     Timer(Duration(seconds: 2), () {
       setState(() {
-        _containerSize = 2;
+        _containerSize = 2.2;
         _containerOpacity = 1;
       });
     });
 
     Timer(Duration(seconds: 4), () {
-      setState(() {
-        Navigator.pushReplacement(context, PageTransition(Dashboard()));
-      });
+      Navigator.pushReplacement(context, PageTransition(Dashboard()));
     });
   }
 
@@ -69,11 +67,11 @@ class _MyCustomSplashScreenState extends State<MyCustomSplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    double _width = MediaQuery.of(context).size.width;
-    double _height = MediaQuery.of(context).size.height;
+    final _width = MediaQuery.of(context).size.width;
+    final _height = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: Colors.black87.withValues(alpha: .2),
+      backgroundColor: Colors.black.withOpacity(0.9),
       body: Stack(
         children: [
           Column(
@@ -87,10 +85,12 @@ class _MyCustomSplashScreenState extends State<MyCustomSplashScreen>
                 duration: Duration(milliseconds: 1000),
                 opacity: _textOpacity,
                 child: Text(
-                  '          News App\n By:Mohamed Elsafty',
+                  'News App\nBy: Mohamed Elsafty',
+                  textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 16,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
@@ -106,13 +106,14 @@ class _MyCustomSplashScreenState extends State<MyCustomSplashScreen>
                 curve: Curves.fastLinearToSlowEaseIn,
                 height: _width / _containerSize,
                 width: _width / _containerSize,
-                alignment: Alignment.center,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(30),
                 ),
-                child: Image(image: AssetImage('assets/images/logo.png'),)
-
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Image.asset('assets/images/logo.png'),
+                ),
               ),
             ),
           ),
@@ -126,22 +127,22 @@ class PageTransition extends PageRouteBuilder {
   final Widget page;
 
   PageTransition(this.page)
-    : super(
-        pageBuilder: (context, animation, anotherAnimation) => page,
-        transitionDuration: Duration(milliseconds: 2000),
-        transitionsBuilder: (context, animation, anotherAnimation, child) {
-          animation = CurvedAnimation(
-            curve: Curves.fastLinearToSlowEaseIn,
-            parent: animation,
-          );
-          return Align(
-            alignment: Alignment.bottomCenter,
-            child: SizeTransition(
-              sizeFactor: animation,
-              child: page,
-              axisAlignment: 0,
-            ),
-          );
-        },
+      : super(
+    pageBuilder: (context, animation, anotherAnimation) => page,
+    transitionDuration: Duration(milliseconds: 1500),
+    transitionsBuilder: (context, animation, anotherAnimation, child) {
+      animation = CurvedAnimation(
+        curve: Curves.fastLinearToSlowEaseIn,
+        parent: animation,
       );
+      return Align(
+        alignment: Alignment.bottomCenter,
+        child: SizeTransition(
+          sizeFactor: animation,
+          child: child,
+          axisAlignment: 0,
+        ),
+      );
+    },
+  );
 }

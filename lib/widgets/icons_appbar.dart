@@ -1,49 +1,61 @@
 import 'package:flutter/material.dart';
 
 class MenuIcon extends StatelessWidget {
-  const MenuIcon({
-    super.key, this.onPressed,
-  });
-final void Function()? onPressed;
+  const MenuIcon({super.key, this.onPressed});
+
+  final void Function()? onPressed;
+
   @override
   Widget build(BuildContext context) {
+    double iconSize = MediaQuery.of(context).size.width * 0.05;
+
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(6.0),
       child: Container(
         decoration: BoxDecoration(
-          color: Color(0xff141E28),
-          borderRadius: BorderRadius.circular(40),
+          color: const Color(0xff141E28),
+          shape: BoxShape.circle,
         ),
-        height: 40,
-        width: 40,
+        width: iconSize * 2.2,
+        height: iconSize * 2.2,
         child: IconButton(
           onPressed: onPressed,
-          icon: Icon(Icons.menu, color: Colors.white, size: 20),
+          icon: Icon(
+            Icons.menu,
+            color: Colors.white,
+            size: iconSize,
+          ),
         ),
       ),
     );
   }
 }
+
 class IconsSearch extends StatelessWidget {
-  const IconsSearch({
-    super.key, required this.icon,
-  });
+  const IconsSearch({super.key, required this.icon});
+
   final IconData icon;
 
   @override
   Widget build(BuildContext context) {
+    double iconSize = MediaQuery.of(context).size.width * 0.05;
+
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(6.0),
       child: GestureDetector(
         onTap: () {},
         child: Container(
-          width: 50,
-          height: 50,
+          width: iconSize * 2.4,
+          height: iconSize * 2.4,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(color: Colors.black, width: 2),
+            border: Border.all(color: Colors.black87, width: 1.8),
           ),
-          child: Icon(icon, color: Colors.black, size: 24),
+          child: Icon(
+            icon,
+            color: Colors.black,
+            size: iconSize,
+          ),
         ),
       ),
     );

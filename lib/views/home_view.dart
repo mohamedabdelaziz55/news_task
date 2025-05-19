@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';  // استيراد ملفات الترجمة
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../cubits/bookMarks_cubit/book_marks_cubit.dart';
 import '../cubits/home_cubit/home_cubit.dart';
 import '../widgets/icons_appbar.dart';
@@ -25,6 +24,8 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
+    double h = MediaQuery.of(context).size.height;
+    double w = MediaQuery.of(context).size.width;
 
     return MultiBlocProvider(
       providers: [
@@ -40,11 +41,25 @@ class _HomeViewState extends State<HomeView> {
           title: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(loc.news, style: const TextStyle(fontWeight: FontWeight.bold)),
-              Text(loc.app),
+              Text(
+                loc.news,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: w * 0.05,
+                ),
+              ),
+              Text(
+                loc.app,
+                style: TextStyle(fontSize: w * 0.05),
+              ),
             ],
           ),
-          actions: const [IconsSearch(icon: Icons.mic_none)],
+          actions: [
+            Padding(
+              padding: EdgeInsets.only(right: w * 0.02),
+              child: const IconsSearch(icon: Icons.mic_none),
+            ),
+          ],
         ),
         body: BlocBuilder<HomeCubit, HomeState>(
           builder: (context, state) {
@@ -60,9 +75,15 @@ class _HomeViewState extends State<HomeView> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(height: 311, child: CategoryListView()),
+                      SizedBox(
+                        height: h * 0.38,
+                        child:  CategoryListView(),
+                      ),
                       Padding(
-                        padding: const EdgeInsets.all(14.0),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: w * 0.04,
+                          vertical: h * 0.015,
+                        ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -70,6 +91,8 @@ class _HomeViewState extends State<HomeView> {
                               "${widget.category[0].toUpperCase()}${widget.category.substring(1)} ${loc.news}",
                               style: TextStyle(
                                 color: const Color(0xff111E29).withAlpha(120),
+                                fontSize: w * 0.04,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                             IconButton(
@@ -78,7 +101,7 @@ class _HomeViewState extends State<HomeView> {
                               },
                               icon: Icon(
                                 Icons.arrow_circle_right_outlined,
-                                size: 18,
+                                size: w * 0.05,
                                 color: const Color(0xff111E29).withAlpha(120),
                               ),
                             ),
@@ -126,7 +149,13 @@ class _HomeViewState extends State<HomeView> {
                 ),
               );
             } else if (state is HomeError) {
-              return Center(child: Text(state.error));
+              return Center(
+                child: Text(
+                  state.error,
+                  style: TextStyle(fontSize: w * 0.045, color: Colors.red),
+                  textAlign: TextAlign.center,
+                ),
+              );
             } else {
               return const SizedBox.shrink();
             }

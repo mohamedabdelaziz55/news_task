@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../constent.dart';
 import '../storage_helper.dart';
 import '../views/category_view.dart';
 
@@ -69,11 +68,13 @@ class _CategoryCardState extends State<CategoryCard> {
       );
     }
   }
-
   @override
   Widget build(BuildContext context) {
+    double h = MediaQuery.of(context).size.height;
+    double w = MediaQuery.of(context).size.width;
+
     return Padding(
-      padding: const EdgeInsets.all(14.0),
+      padding: const EdgeInsets.all(12.0),
       child: GestureDetector(
         onTap: () {
           Navigator.push(
@@ -84,61 +85,75 @@ class _CategoryCardState extends State<CategoryCard> {
           );
         },
         child: Container(
-          height: 320,
-          width: 311,
+          height: h * 0.3,
+          width: w * 0.65,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.15),
+                blurRadius: 6,
+                offset: Offset(0, 3),
+              ),
+            ],
           ),
           child: Stack(
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(18),
+                borderRadius: BorderRadius.circular(16),
                 child: CachedNetworkImage(
                   imageUrl: widget.imagePath,
-                  fit: BoxFit.fill,
-                  height: 311,
-                  placeholder: (context, url) => const CircularProgressIndicator(),
-                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                  fit: BoxFit.cover,
+                  height: h * 0.3,
+                  width: double.infinity,
+                  placeholder: (context, url) =>
+                  const Center(child: CircularProgressIndicator()),
+                  errorWidget: (context, url, error) =>
+                  const Center(child: Icon(Icons.error)),
                 ),
               ),
               Container(
-                height: 311,
-                width: 311,
+                height: h * 0.3,
+                width: double.infinity,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(18),
-                  color: Colors.black.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(16),
+                  color: Colors.black.withValues(alpha: 0.4),
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(18.0),
+                padding: EdgeInsets.symmetric(
+                  horizontal: w * 0.035,
+                  vertical: h * 0.015,
+                ),
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       widget.category.toUpperCase(),
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.white,
-                        fontSize: 14,
+                        fontSize: h * 0.015,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
-                    const SizedBox(height: 100),
+                    const Spacer(),
                     Text(
                       widget.title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.white,
-                        fontSize: 20,
+                        fontSize: h * 0.022,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: h * 0.008),
                     Row(
                       children: [
-                        const Icon(
+                        Icon(
                           CupertinoIcons.chat_bubble_text,
                           color: Colors.white,
+                          size: h * 0.025,
                         ),
-                        const SizedBox(width: 10),
+                        SizedBox(width: w * 0.02),
                         GestureDetector(
                           onTap: AddCat,
                           child: Icon(
@@ -146,13 +161,14 @@ class _CategoryCardState extends State<CategoryCard> {
                                 ? CupertinoIcons.bookmark_fill
                                 : CupertinoIcons.bookmark,
                             color: Colors.white,
+                            size: h * 0.025,
                           ),
                         ),
                         const Spacer(),
                         Image.asset(
                           "assets/icons/right.png",
-                          height: 24,
-                          width: 24,
+                          height: h * 0.027,
+                          width: h * 0.027,
                           color: Colors.white,
                         ),
                       ],

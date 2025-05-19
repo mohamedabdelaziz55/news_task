@@ -6,16 +6,18 @@ import '../views/news_view.dart';
 class NewsCard extends StatelessWidget {
   final VoidCallback logic;
   final Articles article;
-final IconData icon;
+  final IconData icon;
   const NewsCard({
     super.key,
     required this.logic,
-    required this.article, required this.icon,
-
+    required this.article,
+    required this.icon,
   });
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+
     return Slidable(
       key: UniqueKey(),
       endActionPane: ActionPane(
@@ -43,9 +45,13 @@ final IconData icon;
           }
         },
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8),
           child: Container(
             width: double.infinity,
+            constraints: BoxConstraints(
+              minHeight: 100,
+              maxHeight: 120,
+            ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -53,44 +59,44 @@ final IconData icon;
                   borderRadius: BorderRadius.circular(12),
                   child: Image.network(
                     article.urlToImage ?? "https://www.souqfriday.com/src/images/no-image.png",
-                    width: 90,
-                    height: 90,
+                    width: screenWidth * 0.25,
+                    height: 100,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
                       return Image.asset(
                         'assets/images/no-image.png',
-                        width: 90,
-                        height: 90,
+                        width: screenWidth * 0.25,
+                        height: 100,
                         fit: BoxFit.cover,
                       );
                     },
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 6),
                       Text(
                         article.source?.name ?? "Unknown",
                         style: const TextStyle(
-                          fontSize: 12,
+                          fontSize: 13,
                           color: Colors.grey,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 8),
                       Text(
                         article.title ?? "No Title",
                         style: const TextStyle(
-                          fontSize: 16,
+                          fontSize: 17,
                           fontWeight: FontWeight.w600,
                           color: Colors.black,
                           height: 1.3,
                         ),
-                        maxLines: 2,
+                        maxLines: 3,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],

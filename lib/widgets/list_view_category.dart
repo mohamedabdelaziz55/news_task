@@ -67,21 +67,40 @@ class CategoryListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
+
+    double cardHeight = screenHeight * 0.4;
+    double cardWidth = screenWidth * 0.65;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.newsCategories),
       ),
-      body: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: categories.length,
-        itemBuilder: (context, index) {
-          final item = categories[index];
-          return CategoryCard(
-            category: item["category"]!,
-            imagePath: item["image"]!,
-            title: getTranslatedTitle(context, item["titleKey"]!),
-          );
-        },
+      body: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12.0),
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: categories.length,
+          itemBuilder: (context, index) {
+            final item = categories[index];
+            return Padding(
+              padding: EdgeInsets.only(
+                left: index == 0 ? 16 : 8,
+                right: index == categories.length - 1 ? 16 : 8,
+              ),
+              child: SizedBox(
+                height: cardHeight,
+                width: cardWidth,
+                child: CategoryCard(
+                  category: item["category"]!,
+                  imagePath: item["image"]!,
+                  title: getTranslatedTitle(context, item["titleKey"]!),
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }

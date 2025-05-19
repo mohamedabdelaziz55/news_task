@@ -1,11 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:news_app_task/views/search_view.dart';
-import '../app_language.dart';
+import 'package:news_app_task/views/setting_screen.dart';
 import 'book_marks_view.dart';
 import 'home_view.dart';
-import 'package:provider/provider.dart';
+import 'notifications_screen.dart';
 
 class Dashboard extends StatefulWidget {
   static String id = "HomeView";
@@ -20,42 +19,44 @@ class _DashboardState extends State<Dashboard> {
   int selectedIndex = 0;
 
   final List<Widget> _pages = [
-    HomeView(),
-    BookMarksView(),
-    SearchView(),
-    // NotificationsPage(),
-    SearchView(),
-    LanguageSwitchView(),
+    const HomeView(),
+    const BookMarksView(),
+     SearchView(),
+    NotificationsScreen(),
+    const LanguageSwitchView(),
   ];
 
   @override
   Widget build(BuildContext context) {
+    final double h = MediaQuery.of(context).size.height;
+    final double w = MediaQuery.of(context).size.width;
+
     return Scaffold(
       extendBody: true,
       body: _pages[selectedIndex],
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(25),
+        padding: EdgeInsets.all(w * 0.05),
         child: Container(
-          height: 60,
+          height: h * 0.08,
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(h * 0.04),
             boxShadow: [
               BoxShadow(
                 color: Colors.black12,
                 blurRadius: 10,
-                offset: Offset(0, 4),
+                offset: const Offset(0, 4),
               ),
             ],
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              buildNavIcon(CupertinoIcons.home, 0),
-              buildNavIcon(Icons.bookmark_border, 1),
-              buildNavIcon(Icons.search, 2),
-              buildNavIcon(Icons.notifications, 3),
-              buildNavIcon(Icons.settings, 4),
+              buildNavIcon(CupertinoIcons.home, 0, w),
+              buildNavIcon(Icons.bookmark_border, 1, w),
+              buildNavIcon(Icons.search, 2, w),
+              buildNavIcon(Icons.notifications, 3, w),
+              buildNavIcon(Icons.settings, 4, w),
             ],
           ),
         ),
@@ -63,69 +64,19 @@ class _DashboardState extends State<Dashboard> {
     );
   }
 
-  Widget buildNavIcon(IconData icon, int index) {
+  Widget buildNavIcon(IconData icon, int index, double w) {
     return IconButton(
       icon: Icon(
         icon,
-        color:
-        selectedIndex == index
+        size: w * 0.07,
+        color: selectedIndex == index
             ? Colors.black
-            : Colors.black54.withValues(alpha: 0.2),
+            : Colors.black54.withAlpha(50),
       ),
       onPressed: () {
         setState(() {
           selectedIndex = index;
         });
-      },
-    );
-  }
-}
-
-
-
-class LanguageSwitchView extends StatelessWidget {
-  static const String id = 'languageSwitch';
-
-  const LanguageSwitchView({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<AppLanguageProvider>(
-      builder: (context, appLanguageProvider, _) {
-        bool isEnglish = appLanguageProvider.locale == 'en';
-
-        return Scaffold(
-          appBar: AppBar(
-            title: Text(AppLocalizations.of(context)!.setting),
-            centerTitle: true,
-          ),
-          body: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                isEnglish
-                    ? "Current language: English"
-                    : "اللغة الحالية: العربية",
-                style: const TextStyle(fontSize: 20),
-              ),
-              const SizedBox(height: 30),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text('🇪🇬 Arabic'),
-                  Switch(
-                    value: isEnglish,
-                    onChanged: (value) {
-                      String newLocale = value ? 'en' : 'ar';
-                      appLanguageProvider.updateLanguage(newLocale);
-                    },
-                  ),
-                  const Text('English 🇬🇧'),
-                ],
-              ),
-            ],
-          ),
-        );
       },
     );
   }

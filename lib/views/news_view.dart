@@ -31,17 +31,25 @@ class _NewsViewState extends State<NewsView> {
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
+    double h = MediaQuery.of(context).size.height;
+    double w = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: AppBar(title: Text(loc.newsDetailTitle)),
+      extendBody: true,
+      appBar: AppBar(
+        title: Text(
+          loc.newsDetailTitle,
+          style: TextStyle(fontSize: w * 0.045),
+        ),
+      ),
       body: WebViewWidget(controller: controller),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 40),
+        padding: EdgeInsets.symmetric(horizontal: w * 0.2, vertical: h * 0.03),
         child: Container(
-          height: 60,
+          height: h * 0.08,
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(w * 0.07),
             boxShadow: const [
               BoxShadow(
                 color: Colors.black12,
@@ -53,10 +61,11 @@ class _NewsViewState extends State<NewsView> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              buildNavIcon(CupertinoIcons.chat_bubble_text, 0),
+              buildNavIcon(CupertinoIcons.chat_bubble_text, 0, w),
               IconButton(
                 icon: Icon(
                   Icons.bookmark_border,
+                  size: w * 0.07,
                   color: selectedIndex == 1 ? Colors.blue : Colors.black54,
                 ),
                 onPressed: () async {
@@ -69,7 +78,6 @@ class _NewsViewState extends State<NewsView> {
                     'url': widget.article.url ?? '',
                     'urlToImage': widget.article.urlToImage ?? '',
                   });
-                  print("response:$response");
                   if (response > 0) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text(loc.bookmarkSuccess)),
@@ -89,7 +97,7 @@ class _NewsViewState extends State<NewsView> {
                 },
                 icon: ImageIcon(
                   const AssetImage('assets/icons/right.png'),
-                  size: 24,
+                  size: w * 0.065,
                   color: selectedIndex == 2 ? Colors.blue : Colors.black54,
                 ),
               ),
@@ -100,10 +108,11 @@ class _NewsViewState extends State<NewsView> {
     );
   }
 
-  Widget buildNavIcon(IconData icon, int index) {
+  Widget buildNavIcon(IconData icon, int index, double w) {
     return IconButton(
       icon: Icon(
         icon,
+        size: w * 0.065,
         color: selectedIndex == index ? Colors.blue : Colors.black54,
       ),
       onPressed: () {

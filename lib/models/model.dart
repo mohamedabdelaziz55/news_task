@@ -49,7 +49,6 @@ class Articles {
     this.content,
   });
 
-  // ✅ من JSON
   Articles.fromJson(Map<String, dynamic> json) {
     source = json['source'] != null ? Source.fromJson(json['source']) : null;
     author = json['author'];
@@ -61,7 +60,6 @@ class Articles {
     content = json['content'];
   }
 
-  // ✅ من قاعدة البيانات
   factory Articles.fromMap(Map<String, dynamic> map) {
     return Articles(
       title: map['title'],

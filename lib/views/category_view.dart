@@ -23,7 +23,6 @@ class _CategoryViewState extends State<CategoryView> {
   String getTranslatedCategoryName(BuildContext context, String category) {
     final loc = AppLocalizations.of(context)!;
 
-
     switch (category.toLowerCase()) {
       case 'technology':
         return loc.technology;
@@ -33,12 +32,12 @@ class _CategoryViewState extends State<CategoryView> {
         return loc.business;
       case 'health':
         return loc.health;
-       case 'entertainment':
-      return loc.entertainment;
-       case 'science':
-      return loc.science;
-       case 'general':
-      return loc.general;
+      case 'entertainment':
+        return loc.entertainment;
+      case 'science':
+        return loc.science;
+      case 'general':
+        return loc.general;
       default:
         return category;
     }
@@ -46,6 +45,9 @@ class _CategoryViewState extends State<CategoryView> {
 
   @override
   Widget build(BuildContext context) {
+    final double h = MediaQuery.of(context).size.height;
+    final double w = MediaQuery.of(context).size.width;
+
     final localizedCategoryName = getTranslatedCategoryName(context, widget.category);
 
     return MultiBlocProvider(
@@ -59,7 +61,10 @@ class _CategoryViewState extends State<CategoryView> {
       ],
       child: Scaffold(
         appBar: AppBar(
-          title: Text("$localizedCategoryName ${AppLocalizations.of(context)!.news}"),
+          title: Text(
+            "$localizedCategoryName ${AppLocalizations.of(context)!.news}",
+            style: TextStyle(fontSize: w * 0.05),
+          ),
           centerTitle: true,
         ),
         body: BlocBuilder<NewsCategoryCubit, NewsCategoryState>(
@@ -69,42 +74,64 @@ class _CategoryViewState extends State<CategoryView> {
             } else if (state is NewsCategorySuccess) {
               return RefreshIndicator(
                 onRefresh: () => context.read<NewsCategoryCubit>().fetchCategoryNews(widget.category),
-                child: ListView.builder(
-                  itemCount: state.articles.length,
-                  itemBuilder: (context, index) {
-                    final article = state.articles[index];
-                    return NewsCard(
-                      article: article,
-                      icon: Icons.bookmark_border,
-                      logic: () async {
-                        setState(() {
-                          selectedIndex = 1;
-                        });
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: w * 0.04, vertical: h * 0.01),
+                  child: ListView.builder(
+                    itemCount: state.articles.length,
+                    itemBuilder: (context, index) {
+                      final article = state.articles[index];
+                      return Padding(
+                        padding: EdgeInsets.only(bottom: h * 0.02),
+                        child: NewsCard(
+                          article: article,
+                          icon: Icons.bookmark_border,
+                          logic: () async {
+                            setState(() {
+                              selectedIndex = 1;
+                            });
 
-                        final articleMap = {
-                          'title': article.title ?? '',
-                          'description': article.description ?? '',
-                          'url': article.url ?? '',
-                          'urlToImage': article.urlToImage ?? '',
-                        };
+                            final articleMap = {
+                              'title': article.title ?? '',
+                              'description': article.description ?? '',
+                              'url': article.url ?? '',
+                              'urlToImage': article.urlToImage ?? '',
+                            };
 
-                        try {
-                          await context.read<BookmarksCubit>().addArticle(articleMap);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(AppLocalizations.of(context)!.articleBookmarked)),
-                          );
-                        } catch (_) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(AppLocalizations.of(context)!.bookmarkFail)),
-                          );
-                        }
-                      },
-                    );
-                  },
+                            try {
+                              await context.read<BookmarksCubit>().addArticle(articleMap);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    AppLocalizations.of(context)!.articleBookmarked,
+                                    style: TextStyle(fontSize: w * 0.04),
+                                  ),
+                                ),
+                              );
+                            } catch (_) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    AppLocalizations.of(context)!.bookmarkFail,
+                                    style: TextStyle(fontSize: w * 0.04),
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      );
+                    },
+                  ),
                 ),
               );
             } else if (state is NewsCategoryError) {
-              return Center(child: Text(state.message));
+              return Center(
+                child: Text(
+                  state.message,
+                  style: TextStyle(fontSize: w * 0.045),
+                  textAlign: TextAlign.center,
+                ),
+              );
             } else {
               return const SizedBox.shrink();
             }

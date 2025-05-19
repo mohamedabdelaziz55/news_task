@@ -1,6 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dio/dio.dart';
-
 import '../../models/model.dart';
 import '../../services/news_service.dart';
 import 'category_state.dart';

@@ -15,6 +15,9 @@ class BookMarksView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double h = MediaQuery.of(context).size.height;
+    double w = MediaQuery.of(context).size.width;
+
     final loc = AppLocalizations.of(context)!;
 
     return BlocProvider(
@@ -37,17 +40,21 @@ class BookMarksView extends StatelessWidget {
                 actions: const [IconsSearch(icon: Icons.search)],
               ),
               body: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.symmetric(horizontal: w * 0.04, vertical: h * 0.02),
                 child: SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(loc.categories,
-                          style: const TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 12),
+                      Text(
+                        loc.categories,
+                        style: TextStyle(
+                          fontSize: w * 0.05,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: h * 0.015),
                       SizedBox(
-                        height: 250,
+                        height: h * 0.3,
                         child: categories.isEmpty
                             ? Center(child: Text(loc.noCategories))
                             : ListView.builder(
@@ -60,31 +67,31 @@ class BookMarksView extends StatelessWidget {
                               imagePath: cat['imagePath'],
                               title: cat['title'],
                               onRemove: () {
-                                context
-                                    .read<BookmarksCubit>()
-                                    .deleteCategory(cat['category']);
+                                context.read<BookmarksCubit>().deleteCategory(cat['category']);
                               },
                             );
                           },
                         ),
                       ),
-                      const SizedBox(height: 24),
-                      Text(loc.latestBookmarks,
-                          style: const TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 16),
+                      SizedBox(height: h * 0.03),
+                      Text(
+                        loc.latestBookmarks,
+                        style: TextStyle(
+                          fontSize: w * 0.05,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: h * 0.02),
                       if (articles.isEmpty)
                         Center(child: Text(loc.noBookmarks))
                       else
                         ...articles.map(
                               (article) => Padding(
-                            padding: const EdgeInsets.only(bottom: 12.0),
+                            padding: EdgeInsets.only(bottom: h * 0.015),
                             child: NewsCard(
                               article: Articles.fromMap(article),
                               logic: () {
-                                context
-                                    .read<BookmarksCubit>()
-                                    .deleteArticle(article['url']);
+                                context.read<BookmarksCubit>().deleteArticle(article['url']);
                               },
                               icon: Icons.delete,
                             ),

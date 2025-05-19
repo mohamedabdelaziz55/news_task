@@ -1,6 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:news_app_task/views/book_marks_view.dart';
-
 import '../../storage_helper.dart';
 import 'book_marks_state.dart';
 
@@ -45,7 +43,6 @@ class BookmarksCubit extends Cubit<BookmarksState> {
     await loadBookmarks();
   }
 
-  // ✅ الميثود الجديدة للتحقق من وجود المقالة
   bool isArticleBookmarked(String url) {
     if (state is BookmarksLoaded) {
       final currentState = state as BookmarksLoaded;

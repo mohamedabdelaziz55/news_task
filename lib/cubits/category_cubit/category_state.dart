@@ -1,6 +1,3 @@
-
-
-
 import '../../models/model.dart';
 
 abstract class NewsCategoryState {}

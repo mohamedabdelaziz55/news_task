@@ -30,23 +30,25 @@ class _SearchViewState extends State<SearchView> {
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
+    final w = MediaQuery.of(context).size.width;
+    final h = MediaQuery.of(context).size.height;
 
     return BlocProvider.value(
       value: _searchCubit,
       child: Scaffold(
         body: Padding(
-          padding: const EdgeInsets.all(14.0),
+          padding: EdgeInsets.all(w * 0.035),
           child: Column(
             children: [
-              SizedBox(height: 60),
+              SizedBox(height: h * 0.07),
               Container(
-                height: 70,
+                height: h * 0.085,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(40),
-                  color: Color(0xff141E28).withOpacity(.8),
+                  borderRadius: BorderRadius.circular(w * 0.1),
+                  color: const Color(0xff141E28).withOpacity(.8),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 18),
+                  padding: EdgeInsets.symmetric(horizontal: w * 0.045),
                   child: Row(
                     children: [
                       Expanded(
@@ -55,10 +57,10 @@ class _SearchViewState extends State<SearchView> {
                           onSubmitted: (query) {
                             _searchCubit.searchNews(query);
                           },
-                          style: TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Colors.white),
                           decoration: InputDecoration(
-                            hintText: loc.searchHint,  // "Search by title or content"
-                            hintStyle: TextStyle(color: Colors.white54),
+                            hintText: loc.searchHint,
+                            hintStyle: TextStyle(color: Colors.white54, fontSize: w * 0.04),
                             border: InputBorder.none,
                           ),
                         ),
@@ -68,37 +70,40 @@ class _SearchViewState extends State<SearchView> {
                           _searchCubit.searchNews(_searchController.text);
                         },
                         child: Container(
-                          height: 40,
-                          width: 40,
+                          height: w * 0.1,
+                          width: w * 0.1,
                           decoration: BoxDecoration(
                             color: Colors.white,
-                            borderRadius: BorderRadius.circular(40),
+                            borderRadius: BorderRadius.circular(w * 0.1),
                           ),
-                          child: Icon(Icons.search),
+                          child: Icon(Icons.search, size: w * 0.06),
                         ),
                       ),
                     ],
                   ),
                 ),
               ),
-              SizedBox(height: 30),
+              SizedBox(height: h * 0.03),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(loc.searchResultsTitle, style: TextStyle(fontSize: 24)),  // "Results"
-                  Icon(Icons.arrow_circle_right_outlined),
+                  Text(
+                    loc.searchResultsTitle,
+                    style: TextStyle(fontSize: w * 0.06, fontWeight: FontWeight.bold),
+                  ),
+                  Icon(Icons.arrow_circle_right_outlined, size: w * 0.07),
                 ],
               ),
-              SizedBox(height: 20),
+              SizedBox(height: h * 0.025),
               Expanded(
                 child: BlocBuilder<SearchCubit, SearchState>(
                   builder: (context, state) {
                     if (state is SearchLoading) {
-                      return Center(child: CircularProgressIndicator());
+                      return const Center(child: CircularProgressIndicator());
                     } else if (state is SearchLoaded) {
                       final articles = state.articles;
                       return articles.isEmpty
-                          ? Center(child: Text(loc.searchNoResults))  // "لا توجد نتائج"
+                          ? Center(child: Text(loc.searchNoResults, style: TextStyle(fontSize: w * 0.045)))
                           : ListView.builder(
                         itemCount: articles.length,
                         itemBuilder: (context, index) {
@@ -115,36 +120,36 @@ class _SearchViewState extends State<SearchView> {
                               }
                             },
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              padding: EdgeInsets.symmetric(vertical: h * 0.01),
                               child: Row(
                                 children: [
                                   ClipRRect(
-                                    borderRadius: BorderRadius.circular(12),
+                                    borderRadius: BorderRadius.circular(w * 0.03),
                                     child: Image.network(
                                       article.urlToImage ?? "https://www.souqfriday.com/src/images/no-image.png",
-                                      width: 90,
-                                      height: 90,
+                                      width: w * 0.22,
+                                      height: w * 0.22,
                                       fit: BoxFit.cover,
                                     ),
                                   ),
-                                  const SizedBox(width: 12),
+                                  SizedBox(width: w * 0.03),
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          article.source?.name ?? loc.searchUnknownSource, // "غير معروف"
+                                          article.source?.name ?? loc.searchUnknownSource,
                                           style: TextStyle(
-                                            fontSize: 12,
+                                            fontSize: w * 0.03,
                                             color: Colors.grey,
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
-                                        const SizedBox(height: 6),
+                                        SizedBox(height: h * 0.007),
                                         Text(
-                                          article.title ?? loc.searchNoTitle, // "لا يوجد عنوان"
+                                          article.title ?? loc.searchNoTitle,
                                           style: TextStyle(
-                                            fontSize: 16,
+                                            fontSize: w * 0.04,
                                             fontWeight: FontWeight.w600,
                                           ),
                                           maxLines: 2,
@@ -160,7 +165,9 @@ class _SearchViewState extends State<SearchView> {
                         },
                       );
                     } else if (state is SearchError) {
-                      return Center(child: Text(state.message));
+                      return Center(
+                        child: Text(state.message, style: TextStyle(fontSize: w * 0.045)),
+                      );
                     }
                     return Container();
                   },

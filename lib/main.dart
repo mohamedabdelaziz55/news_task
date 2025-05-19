@@ -1,4 +1,3 @@
-import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app_task/app_language.dart';
@@ -27,7 +26,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => appLanguageProvider),
       ],
-      child: DevicePreview(builder: (BuildContext context)=> MyApp(isFirstTime: isFirstTime)),
+      child: MyApp(isFirstTime: isFirstTime),
     ),
   );
 }
@@ -51,7 +50,6 @@ class MyApp extends StatelessWidget {
             ),
           ],
           child: MaterialApp(
-            builder: DevicePreview.appBuilder,
             debugShowCheckedModeBanner: false,
             locale: Locale(appLanguageProvider.locale),
             localizationsDelegates: AppLocalizations.localizationsDelegates,
