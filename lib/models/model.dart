@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 class ModelNews {
   String? status;
@@ -50,6 +49,7 @@ class Articles {
     this.content,
   });
 
+  // ✅ من JSON
   Articles.fromJson(Map<String, dynamic> json) {
     source = json['source'] != null ? Source.fromJson(json['source']) : null;
     author = json['author'];
@@ -59,6 +59,25 @@ class Articles {
     urlToImage = json['urlToImage'];
     publishedAt = json['publishedAt'];
     content = json['content'];
+  }
+
+  // ✅ من قاعدة البيانات
+  factory Articles.fromMap(Map<String, dynamic> map) {
+    return Articles(
+      title: map['title'],
+      description: map['description'],
+      url: map['url'],
+      urlToImage: map['urlToImage'],
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'title': title,
+      'description': description,
+      'url': url,
+      'urlToImage': urlToImage,
+    };
   }
 
   Map<String, dynamic> toJson() {
@@ -76,6 +95,7 @@ class Articles {
     return data;
   }
 }
+
 
 class Source {
   String? id;

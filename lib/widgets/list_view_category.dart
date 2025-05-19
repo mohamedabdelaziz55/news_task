@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'category_card.dart';
 
 class CategoryListView extends StatelessWidget {
@@ -8,45 +9,68 @@ class CategoryListView extends StatelessWidget {
     {
       "category": "technology",
       "image": "https://images.unsplash.com/photo-1518773553398-650c184e0bb3?auto=format&fit=crop&w=800&q=80",
-      "title": "Tech Innovations Today",
+      "titleKey": "techTitle",
     },
     {
       "category": "business",
       "image": "https://images.unsplash.com/photo-1556740749-887f6717d7e4?auto=format&fit=crop&w=800&q=80",
-      "title": "Business News Today",
+      "titleKey": "businessTitle",
     },
     {
       "category": "entertainment",
       "image": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=800&q=80",
-      "title": "Top Entertainment Stories",
+      "titleKey": "entertainmentTitle",
     },
     {
       "category": "general",
       "image": "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80",
-      "title": "General Headlines",
+      "titleKey": "generalTitle",
     },
     {
       "category": "health",
       "image": "https://images.unsplash.com/photo-1526256262350-7da7584cf5eb?auto=format&fit=crop&w=800&q=80",
-      "title": "Health Tips & Advice",
+      "titleKey": "healthTitle",
     },
     {
       "category": "science",
       "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQzJ2hVzPMMtw-6RkipDHLNcL4V7LIft9_5Ew&s",
-      "title": "Latest Scientific Research",
+      "titleKey": "scienceTitle",
     },
     {
       "category": "sports",
       "image": "https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=800&q=80",
-      "title": "Sports Highlights",
+      "titleKey": "sportsTitle",
     },
-
   ];
+
+  String getTranslatedTitle(BuildContext context, String key) {
+    final loc = AppLocalizations.of(context)!;
+    switch (key) {
+      case "techTitle":
+        return loc.techTitle;
+      case "businessTitle":
+        return loc.businessTitle;
+      case "entertainmentTitle":
+        return loc.entertainmentTitle;
+      case "generalTitle":
+        return loc.generalTitle;
+      case "healthTitle":
+        return loc.healthTitle;
+      case "scienceTitle":
+        return loc.scienceTitle;
+      case "sportsTitle":
+        return loc.sportsTitle;
+      default:
+        return '';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("News Categories")),
+      appBar: AppBar(
+        title: Text(AppLocalizations.of(context)!.newsCategories),
+      ),
       body: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: categories.length,
@@ -55,7 +79,7 @@ class CategoryListView extends StatelessWidget {
           return CategoryCard(
             category: item["category"]!,
             imagePath: item["image"]!,
-            title: item["title"]!,
+            title: getTranslatedTitle(context, item["titleKey"]!),
           );
         },
       ),

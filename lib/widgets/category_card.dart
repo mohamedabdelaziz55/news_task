@@ -1,8 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:news_app_task/views/news_view.dart';
-
 import '../constent.dart';
+import '../storage_helper.dart';
+import '../views/category_view.dart';
 
 class CategoryCard extends StatefulWidget {
   final String category;
@@ -24,49 +25,47 @@ class CategoryCard extends StatefulWidget {
 
 class _CategoryCardState extends State<CategoryCard> {
   bool isBookmarked = false;
+  DatabaseHelper db = DatabaseHelper.instance;
 
   @override
   void initState() {
     super.initState();
-    isBookmarked = bookmarkedCategories.any(
-          (cat) => cat['category'] == widget.category,
-    );
+    checkIfBookmarked();
   }
 
-  void handleBookmark() {
+  void checkIfBookmarked() async {
+    List<Map<String, dynamic>> categories = await db.getCategories();
+    bool bookmarked = categories.any(
+          (cat) => cat['category'] == widget.category,
+    );
+    setState(() {
+      isBookmarked = bookmarked;
+    });
+  }
+
+  Future<void> AddCat() async {
     if (!isBookmarked) {
-      bookmarkedCategories.add({
+      final response = await db.insertCategory({
         'category': widget.category,
         'imagePath': widget.imagePath,
         'title': widget.title,
       });
-
-      setState(() {
-        isBookmarked = true;
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Category "${widget.title}" added to bookmarks ✅'),
-          duration: const Duration(seconds: 2),
-        ),
-      );
+      if (response > 0) {
+        setState(() {
+          isBookmarked = true;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Category "${widget.title}" added to bookmarks ✅')),
+        );
+      }
     } else {
-      bookmarkedCategories.removeWhere(
-            (cat) => cat['category'] == widget.category,
-      );
-
+      await db.deleteCategory(widget.category);
       setState(() {
         isBookmarked = false;
       });
-
-      widget.onRemove?.call(); // لإعادة بناء الصفحة الأم
-
+      widget.onRemove?.call();
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Category "${widget.title}" removed ❌'),
-          duration: const Duration(seconds: 2),
-        ),
+        SnackBar(content: Text('Category "${widget.title}" removed ❌')),
       );
     }
   }
@@ -77,10 +76,11 @@ class _CategoryCardState extends State<CategoryCard> {
       padding: const EdgeInsets.all(14.0),
       child: GestureDetector(
         onTap: () {
-          Navigator.pushNamed(
+          Navigator.push(
             context,
-            NewsView.id,
-            arguments: widget.category,
+            MaterialPageRoute(
+              builder: (context) => CategoryView(category: widget.category),
+            ),
           );
         },
         child: Container(
@@ -93,11 +93,12 @@ class _CategoryCardState extends State<CategoryCard> {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(18),
-                child: Image.network(
-                  widget.imagePath,
+                child: CachedNetworkImage(
+                  imageUrl: widget.imagePath,
+                  fit: BoxFit.fill,
                   height: 311,
-                  width: 311,
-                  fit: BoxFit.cover,
+                  placeholder: (context, url) => const CircularProgressIndicator(),
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
                 ),
               ),
               Container(
@@ -139,7 +140,7 @@ class _CategoryCardState extends State<CategoryCard> {
                         ),
                         const SizedBox(width: 10),
                         GestureDetector(
-                          onTap: handleBookmark,
+                          onTap: AddCat,
                           child: Icon(
                             isBookmarked
                                 ? CupertinoIcons.bookmark_fill

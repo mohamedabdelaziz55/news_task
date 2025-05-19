@@ -42,6 +42,14 @@ dependencies:
   webview_flutter: ^4.11.0
   timeago: ^3.7.1
   shared_preferences: ^2.5.3
+  provider: ^6.1.5
+  cached_network_image: ^3.4.1
+  bloc: ^9.0.0
+  flutter_bloc: ^9.1.1
+  sqflite: ^2.4.2
+  flutter_localization: ^0.3.2
+  responsive: ^0.3.11+11
+  device_preview: ^1.2.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -59,15 +67,18 @@ dev_dependencies:
 # The following section is specific to Flutter packages.
 flutter:
 
+
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  generate: true
 
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
     - assets/icons/
+    - assets/fonts/
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 
@@ -79,11 +90,12 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
+  fonts:
+    - family: PlayfairDisplay
+      fonts:
+        - asset: assets/fonts/PlayfairDisplay-Regular.ttf
+        - asset: assets/fonts/PlayfairDisplay-ExtraBold.ttf
+          weight: 700
   #         style: italic
   #   - family: Trajan Pro
   #     fonts:

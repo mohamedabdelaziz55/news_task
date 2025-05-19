@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import '../models/model.dart'; // تأكد من مسار ملف الـ model صحيح
+import '../models/model.dart';
 import '../views/news_view.dart';
 
 class NewsCard extends StatelessWidget {
-  final VoidCallback onDelete;
+  final VoidCallback logic;
   final Articles article;
-
+final IconData icon;
   const NewsCard({
     super.key,
-    required this.onDelete,
-    required this.article,
+    required this.logic,
+    required this.article, required this.icon,
+
   });
 
   @override
@@ -22,10 +23,10 @@ class NewsCard extends StatelessWidget {
         extentRatio: 0.25,
         children: [
           SlidableAction(
-            onPressed: (context) => onDelete(),
+            onPressed: (context) => logic(),
             backgroundColor: Colors.white,
             foregroundColor: Colors.black.withAlpha(150),
-            icon: Icons.close_rounded,
+            icon: icon,
             borderRadius: BorderRadius.circular(12),
           ),
         ],

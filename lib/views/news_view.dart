@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../models/model.dart';
-import '../constent.dart';
+import '../storage_helper.dart';
 
 class NewsView extends StatefulWidget {
   final Articles article;
@@ -17,6 +18,7 @@ class NewsView extends StatefulWidget {
 class _NewsViewState extends State<NewsView> {
   late final WebViewController controller;
   int selectedIndex = 0;
+  DatabaseHelper db = DatabaseHelper.instance;
 
   @override
   void initState() {
@@ -28,8 +30,10 @@ class _NewsViewState extends State<NewsView> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+
     return Scaffold(
-      appBar: AppBar(title: const Text("News Detail")),
+      appBar: AppBar(title: Text(loc.newsDetailTitle)),
       body: WebViewWidget(controller: controller),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 40),
@@ -38,7 +42,7 @@ class _NewsViewState extends State<NewsView> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(30),
-            boxShadow: [
+            boxShadow: const [
               BoxShadow(
                 color: Colors.black12,
                 blurRadius: 10,
@@ -55,29 +59,27 @@ class _NewsViewState extends State<NewsView> {
                   Icons.bookmark_border,
                   color: selectedIndex == 1 ? Colors.blue : Colors.black54,
                 ),
-                onPressed: () {
+                onPressed: () async {
                   setState(() {
                     selectedIndex = 1;
-                    if (!bookmarkedArticles.contains(widget.article)) {
-                      bookmarkedArticles.add(widget.article);
-
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Article bookmarked ✅'),
-                          duration: Duration(seconds: 2),
-                        ),
-                      );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Already bookmarked ❗'),
-                          duration: Duration(seconds: 2),
-                        ),
-                      );
-                    }
                   });
+                  int response = await db.insertArticle({
+                    'title': widget.article.title ?? '',
+                    'description': widget.article.description ?? '',
+                    'url': widget.article.url ?? '',
+                    'urlToImage': widget.article.urlToImage ?? '',
+                  });
+                  print("response:$response");
+                  if (response > 0) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(loc.bookmarkSuccess)),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(loc.bookmarkFail)),
+                    );
+                  }
                 },
-
               ),
               IconButton(
                 onPressed: () {
